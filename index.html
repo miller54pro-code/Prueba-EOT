@@ -65,6 +65,11 @@
       color: #fbbf24;
       border: 1px solid rgba(245, 158, 11, 0.35);
     }
+    .badge-drop {
+      background: rgba(239, 68, 68, 0.15);
+      color: #f87171;
+      border: 1px solid rgba(239, 68, 68, 0.35);
+    }
   </style>
 </head>
 <body class="h-full flex flex-col font-sans overflow-hidden antialiased select-none">
@@ -77,7 +82,7 @@
       </div>
       <div>
         <h1 class="text-sm font-bold tracking-tight text-white flex items-center gap-2">
-          EOT Portal <span class="text-xs px-2 py-0.5 rounded font-mono font-medium bg-blue-500/20 text-blue-400 border border-blue-500/30">Order Tracking & Amortization</span>
+          EOT Portal <span class="text-xs px-2 py-0.5 rounded font-mono font-medium bg-blue-500/20 text-blue-400 border border-blue-500/30">Order Tracking & Drops Audit</span>
         </h1>
       </div>
     </div>
@@ -108,7 +113,6 @@
 
       <!-- Navigation Tree -->
       <div class="flex-1 overflow-y-auto p-3 space-y-5" id="brandTreeContainer">
-        
         <!-- ADIDAS SECTION -->
         <div>
           <div class="flex items-center justify-between text-xs font-bold text-slate-300 px-2 py-1.5 rounded bg-slate-800/50 mb-1">
@@ -120,9 +124,7 @@
             </div>
             <span id="badge-count-adidas" class="text-[10px] bg-slate-700/80 text-slate-300 px-1.5 py-0.5 rounded-full font-mono">0</span>
           </div>
-          <div class="space-y-0.5 pl-2" id="folder-list-adidas">
-            <!-- Dynamic folders populated by JS -->
-          </div>
+          <div class="space-y-0.5 pl-2" id="folder-list-adidas"></div>
         </div>
 
         <!-- REEBOK SECTION -->
@@ -136,16 +138,13 @@
             </div>
             <span id="badge-count-reebok" class="text-[10px] bg-slate-700/80 text-slate-300 px-1.5 py-0.5 rounded-full font-mono">0</span>
           </div>
-          <div class="space-y-0.5 pl-2" id="folder-list-reebok">
-            <!-- Dynamic folders populated by JS -->
-          </div>
+          <div class="space-y-0.5 pl-2" id="folder-list-reebok"></div>
         </div>
-
       </div>
 
       <!-- Quick sample load banner -->
       <div class="p-3 border-t border-slate-800 bg-slate-950/40 text-xs">
-        <p class="text-slate-400 mb-2">¿Quieres probar el flujo con datos de prueba?</p>
+        <p class="text-slate-400 mb-2">Prueba el flujo con la muestra oficial:</p>
         <button onclick="loadSampleData()" class="w-full bg-slate-800 hover:bg-slate-700 text-slate-200 py-1.5 px-2 rounded font-medium border border-slate-700 transition flex items-center justify-center gap-1.5">
           <svg class="w-3.5 h-3.5 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path></svg>
           Cargar demo FW26 (Reebok)
@@ -156,58 +155,70 @@
     <!-- WORKSPACE / MAIN CONTENT -->
     <main class="flex-1 flex flex-col bg-slate-950 overflow-hidden">
       
-      <!-- TOP ACTION BAR & CONTROLS -->
-      <div class="p-4 border-b border-slate-800 bg-slate-900/60 flex flex-wrap items-center justify-between gap-3">
-        <div class="flex items-center gap-2">
-          <!-- Button: Cargar Base Inicial -->
-          <label class="cursor-pointer bg-blue-600 hover:bg-blue-500 text-white font-medium text-xs px-3.5 py-2 rounded-md transition flex items-center gap-1.5 shadow-sm">
-            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"></path></svg>
-            <span>Cargar Base Inicial (.xls/.xlsx)</span>
-            <input type="file" id="fileInputBase" accept=".xls,.xlsx" class="hidden" onchange="handleFileImport(event, 'base')">
-          </label>
+      <!-- NAVIGATION TABS & ACTIONS -->
+      <div class="border-b border-slate-800 bg-slate-900/70 px-4 pt-3 flex flex-wrap items-center justify-between gap-3">
+        <!-- Tabs -->
+        <div class="flex items-center gap-2 overflow-x-auto">
+          <button onclick="switchAppTab('matriz')" id="navTabMatriz" class="px-4 py-2 text-xs font-semibold rounded-t-lg border-b-2 border-blue-500 text-blue-400 bg-slate-900 transition flex items-center gap-2">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M3 14h18m-9-4v8m-7 0h14a2 2 0 002-2V6a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
+            <span>Matriz General / Situación</span>
+          </button>
 
-          <!-- Button: Subir Compras Extras -->
-          <label class="cursor-pointer bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 font-medium text-xs px-3.5 py-2 rounded-md transition flex items-center gap-1.5">
-            <svg class="w-4 h-4 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
-            <span>Subir Compras Extras</span>
-            <input type="file" id="fileInputExtra" accept=".xls,.xlsx" class="hidden" onchange="handleFileImport(event, 'extra')">
-          </label>
+          <button onclick="switchAppTab('drops')" id="navTabDrops" class="px-4 py-2 text-xs font-semibold rounded-t-lg border-b-2 border-transparent text-slate-400 hover:text-slate-200 transition flex items-center gap-2">
+            <span class="w-2 h-2 rounded-full bg-red-500"></span>
+            <span>Reporte de DROPS (Cancelaciones)</span>
+            <span id="tabDropsBadge" class="bg-red-500/20 text-red-400 text-[10px] px-1.5 py-0.2 rounded-full font-mono border border-red-500/30">0</span>
+          </button>
 
-          <!-- Button: Cruzar Factura Parcial -->
-          <button onclick="openModal('reconcileModal')" class="bg-amber-600/90 hover:bg-amber-600 text-white font-medium text-xs px-3.5 py-2 rounded-md transition flex items-center gap-1.5 shadow-sm">
-            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
-            <span>Cruzar Factura Parcial</span>
+          <button onclick="switchAppTab('channels')" id="navTabChannels" class="px-4 py-2 text-xs font-semibold rounded-t-lg border-b-2 border-transparent text-slate-400 hover:text-slate-200 transition flex items-center gap-2">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 3.055A9.001 9.001 0 1020.945 13H11V3.055z"></path></svg>
+            <span>Métricas & Canales Finales</span>
           </button>
         </div>
 
-        <!-- Button: Exportar Excel -->
-        <div class="flex items-center gap-2">
-          <button onclick="exportToExcel()" class="bg-emerald-600 hover:bg-emerald-500 text-white font-medium text-xs px-3.5 py-2 rounded-md transition flex items-center gap-1.5 shadow-sm">
-            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg>
-            <span>Exportar Excel (EOT Oficial)</span>
+        <!-- Global Action Buttons -->
+        <div class="flex items-center gap-2 pb-2">
+          <!-- Button: Cargar Base Inicial -->
+          <label class="cursor-pointer bg-blue-600 hover:bg-blue-500 text-white font-medium text-xs px-3 py-1.5 rounded-md transition flex items-center gap-1.5 shadow-sm">
+            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"></path></svg>
+            <span>Subir Base Inicial</span>
+            <input type="file" id="fileInputBase" accept=".xls,.xlsx" class="hidden" onchange="handleFileImport(event, 'base')">
+          </label>
+
+          <!-- Button: Cargar OC Trabajada (Amortizar + DROPS) -->
+          <label class="cursor-pointer bg-amber-600 hover:bg-amber-500 text-white font-medium text-xs px-3 py-1.5 rounded-md transition flex items-center gap-1.5 shadow-sm">
+            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+            <span>Cargar OC Trabajada</span>
+            <input type="file" id="fileInputOCTrabajada" accept=".xls,.xlsx" class="hidden" onchange="handleOCTrabajadaUpload(event)">
+          </label>
+
+          <!-- Button: Exportar Según Vista -->
+          <button onclick="handleSmartExport()" class="bg-emerald-600 hover:bg-emerald-500 text-white font-medium text-xs px-3 py-1.5 rounded-md transition flex items-center gap-1.5 shadow-sm">
+            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg>
+            <span id="btnExportLabel">Exportar Excel</span>
           </button>
         </div>
       </div>
 
-      <!-- KPI METRIC CARDS -->
-      <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3 p-4 bg-slate-900/40 border-b border-slate-800">
-        <!-- Card 1: Total Unidades -->
+      <!-- KPI METRIC CARDS (DYNAMIC) -->
+      <div id="generalKpiContainer" class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3 p-4 bg-slate-900/40 border-b border-slate-800">
+        <!-- Total Pedido -->
         <div class="bg-slate-900/90 border border-slate-800/80 p-3 rounded-lg">
           <span class="text-[11px] text-slate-400 uppercase tracking-wide font-medium">Total Pedido</span>
           <div class="text-xl font-bold text-white mt-1 font-mono" id="kpiTotalUnits">0</div>
           <span class="text-[10px] text-slate-500" id="kpiTotalRows">0 registros</span>
         </div>
 
-        <!-- Card 2: Unidades Facturadas (P24) -->
+        <!-- Facturado (P24) -->
         <div class="bg-slate-900/90 border border-emerald-900/40 p-3 rounded-lg">
           <span class="text-[11px] text-emerald-400 uppercase tracking-wide font-medium flex items-center gap-1">
             <span class="w-1.5 h-1.5 rounded-full bg-emerald-400"></span> Facturado (P24)
           </span>
           <div class="text-xl font-bold text-emerald-400 mt-1 font-mono" id="kpiFacturadoUnits">0</div>
-          <span class="text-[10px] text-emerald-500/80" id="kpiFacturadoPct">0% de cumplimiento</span>
+          <span class="text-[10px] text-emerald-500/80" id="kpiFacturadoPct">0% cumplido</span>
         </div>
 
-        <!-- Card 3: Unidades Pendientes (10A) -->
+        <!-- Pendiente (10A) -->
         <div class="bg-slate-900/90 border border-amber-900/40 p-3 rounded-lg">
           <span class="text-[11px] text-amber-400 uppercase tracking-wide font-medium flex items-center gap-1">
             <span class="w-1.5 h-1.5 rounded-full bg-amber-400"></span> Pendiente (10A)
@@ -216,111 +227,169 @@
           <span class="text-[10px] text-amber-500/80" id="kpiPendientePct">100% por recibir</span>
         </div>
 
-        <!-- Card 4: FOB Total -->
+        <!-- DROPS (Cancelaciones) -->
+        <div class="bg-slate-900/90 border border-red-900/40 p-3 rounded-lg">
+          <span class="text-[11px] text-red-400 uppercase tracking-wide font-medium flex items-center gap-1">
+            <span class="w-1.5 h-1.5 rounded-full bg-red-400"></span> DROP (Cancelado)
+          </span>
+          <div class="text-xl font-bold text-red-400 mt-1 font-mono" id="kpiDropUnits">0</div>
+          <span class="text-[10px] text-red-400/80 font-mono" id="kpiDropFob">$0.00 FOB perdido</span>
+        </div>
+
+        <!-- FOB Total -->
         <div class="bg-slate-900/90 border border-slate-800/80 p-3 rounded-lg">
-          <span class="text-[11px] text-slate-400 uppercase tracking-wide font-medium">Monto FOB Total</span>
+          <span class="text-[11px] text-slate-400 uppercase tracking-wide font-medium">FOB Activo</span>
           <div class="text-lg font-bold text-slate-200 mt-1 font-mono" id="kpiFobTotal">$0.00</div>
-          <span class="text-[10px] text-slate-500">Costo importación</span>
+          <span class="text-[10px] text-slate-500">Valor importación</span>
         </div>
 
-        <!-- Card 5: PVP Total -->
+        <!-- Canales Activos -->
         <div class="bg-slate-900/90 border border-slate-800/80 p-3 rounded-lg">
-          <span class="text-[11px] text-slate-400 uppercase tracking-wide font-medium">Monto PVP Total</span>
-          <div class="text-lg font-bold text-indigo-300 mt-1 font-mono" id="kpiPvpTotal">$0.00</div>
-          <span class="text-[10px] text-slate-500">Venta proyectada</span>
-        </div>
-
-        <!-- Card 6: Canales Asignados -->
-        <div class="bg-slate-900/90 border border-slate-800/80 p-3 rounded-lg">
-          <span class="text-[11px] text-slate-400 uppercase tracking-wide font-medium">Canales Activos</span>
-          <div class="text-lg font-bold text-white mt-1 font-mono" id="kpiChannelCount">0</div>
-          <span class="text-[10px] text-slate-500">Puntos de venta</span>
+          <span class="text-[11px] text-slate-400 uppercase tracking-wide font-medium">Canales Finales</span>
+          <div class="text-lg font-bold text-indigo-300 mt-1 font-mono" id="kpiChannelCount">0</div>
+          <span class="text-[10px] text-slate-500">Destinos asignados</span>
         </div>
       </div>
 
-      <!-- FILTER & PAGINATION BAR -->
-      <div class="p-3 border-b border-slate-800 flex flex-wrap items-center justify-between gap-3 bg-slate-950">
-        <div class="flex items-center gap-2 flex-1 min-w-[320px]">
-          <!-- Live Search Input -->
-          <div class="relative flex-1">
-            <svg class="w-4 h-4 absolute left-3 top-2.5 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
-            <input type="text" id="searchInput" oninput="debounceSearch()" placeholder="Buscar por SKU (Código), Descripción, Color, Talla..." class="w-full bg-slate-900 border border-slate-800 text-xs rounded-md pl-9 pr-3 py-2 text-slate-200 placeholder-slate-500 focus:outline-none focus:border-blue-500">
-          </div>
+      <!-- VIEW 1: MATRIZ GENERAL -->
+      <section id="viewMatriz" class="flex-1 flex flex-col overflow-hidden">
+        <!-- Filter & Pagination Bar -->
+        <div class="p-3 border-b border-slate-800 flex flex-wrap items-center justify-between gap-3 bg-slate-950">
+          <div class="flex items-center gap-2 flex-1 min-w-[320px]">
+            <div class="relative flex-1">
+              <svg class="w-4 h-4 absolute left-3 top-2.5 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
+              <input type="text" id="searchInput" oninput="debounceSearch()" placeholder="Buscar SKU, Descripción, Color, Factura o Canal..." class="w-full bg-slate-900 border border-slate-800 text-xs rounded-md pl-9 pr-3 py-2 text-slate-200 placeholder-slate-500 focus:outline-none focus:border-blue-500">
+            </div>
 
-          <!-- Stage Filter -->
-          <select id="filterStage" onchange="applyFilters()" class="bg-slate-900 border border-slate-800 text-xs rounded-md px-2.5 py-2 text-slate-300 focus:outline-none focus:border-blue-500">
-            <option value="ALL">Todas las Etapas</option>
-            <option value="10A">Solo Pendientes (10A)</option>
-            <option value="P24">Solo Facturados (P24)</option>
-          </select>
+            <select id="filterStage" onchange="applyFilters()" class="bg-slate-900 border border-slate-800 text-xs rounded-md px-2.5 py-2 text-slate-300 focus:outline-none focus:border-blue-500">
+              <option value="ALL">Todas las Etapas</option>
+              <option value="10A">Solo Pendientes (10A)</option>
+              <option value="P24">Solo Facturados (P24)</option>
+              <option value="DROP">Solo DROPS (Cancelados)</option>
+            </select>
 
-          <!-- Channel Filter -->
-          <select id="filterChannel" onchange="applyFilters()" class="bg-slate-900 border border-slate-800 text-xs rounded-md px-2.5 py-2 text-slate-300 focus:outline-none focus:border-blue-500 max-w-[160px]">
-            <option value="ALL">Todos los Canales</option>
-          </select>
-        </div>
-
-        <!-- Pagination Controls -->
-        <div class="flex items-center gap-3 text-xs text-slate-400">
-          <div class="flex items-center gap-1.5">
-            <span>Mostrar:</span>
-            <select id="rowsPerPage" onchange="changePageSize()" class="bg-slate-900 border border-slate-800 text-xs rounded px-2 py-1 text-slate-300">
-              <option value="50">50</option>
-              <option value="100" selected>100</option>
-              <option value="250">250</option>
-              <option value="500">500</option>
+            <select id="filterChannel" onchange="applyFilters()" class="bg-slate-900 border border-slate-800 text-xs rounded-md px-2.5 py-2 text-slate-300 focus:outline-none focus:border-blue-500 max-w-[160px]">
+              <option value="ALL">Todos los Canales</option>
             </select>
           </div>
-          <span id="pageInfo">0 de 0</span>
-          <div class="flex items-center gap-1">
-            <button onclick="prevPage()" id="btnPrevPage" class="px-2 py-1 bg-slate-800 hover:bg-slate-700 disabled:opacity-30 rounded text-slate-200">◀</button>
-            <button onclick="nextPage()" id="btnNextPage" class="px-2 py-1 bg-slate-800 hover:bg-slate-700 disabled:opacity-30 rounded text-slate-200">▶</button>
+
+          <div class="flex items-center gap-3 text-xs text-slate-400">
+            <div class="flex items-center gap-1.5">
+              <span>Mostrar:</span>
+              <select id="rowsPerPage" onchange="changePageSize()" class="bg-slate-900 border border-slate-800 text-xs rounded px-2 py-1 text-slate-300">
+                <option value="50">50</option>
+                <option value="100" selected>100</option>
+                <option value="250">250</option>
+              </select>
+            </div>
+            <span id="pageInfo">0 de 0</span>
+            <div class="flex items-center gap-1">
+              <button onclick="prevPage()" id="btnPrevPage" class="px-2 py-1 bg-slate-800 hover:bg-slate-700 disabled:opacity-30 rounded text-slate-200">◀</button>
+              <button onclick="nextPage()" id="btnNextPage" class="px-2 py-1 bg-slate-800 hover:bg-slate-700 disabled:opacity-30 rounded text-slate-200">▶</button>
+            </div>
           </div>
         </div>
-      </div>
 
-      <!-- MAIN DATA TABLE CONTAINER -->
-      <div class="flex-1 overflow-auto bg-slate-950 relative" id="tableContainer">
-        <table class="w-full text-left border-collapse text-xs whitespace-nowrap">
-          <thead class="bg-slate-900/90 text-slate-400 font-medium sticky top-0 z-10 border-b border-slate-800 backdrop-blur">
-            <tr>
-              <th class="p-2.5 pl-4">Etapa</th>
-              <th class="p-2.5">Factura / Doc</th>
-              <th class="p-2.5">Código (SKU)</th>
-              <th class="p-2.5">Descripción</th>
-              <th class="p-2.5">Color</th>
-              <th class="p-2.5 text-center">Talla</th>
-              <th class="p-2.5">Canal / Referencia</th>
-              <th class="p-2.5 text-right font-bold text-white">Cant.</th>
-              <th class="p-2.5 text-right">FOB</th>
-              <th class="p-2.5 text-right">PVP</th>
-              <th class="p-2.5">Fecha Factura</th>
-              <th class="p-2.5">Embarque</th>
-              <th class="p-2.5">Categoría</th>
-              <th class="p-2.5 pr-4">Seguimiento</th>
-            </tr>
-          </thead>
-          <tbody id="tableBody" class="divide-y divide-slate-800/60 font-mono text-[11px] text-slate-300">
-            <!-- Dynamic rows will render here -->
-          </tbody>
-        </table>
-
-        <!-- Empty State Placeholder -->
-        <div id="emptyState" class="hidden absolute inset-0 flex flex-col items-center justify-center p-6 text-center">
-          <div class="w-16 h-16 rounded-2xl bg-slate-900 border border-slate-800 flex items-center justify-center text-slate-600 mb-3">
-            <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 13h6m-3-3v6m5 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
+        <!-- Table Container -->
+        <div class="flex-1 overflow-auto bg-slate-950 relative" id="tableContainer">
+          <table class="w-full text-left border-collapse text-xs whitespace-nowrap">
+            <thead class="bg-slate-900/90 text-slate-400 font-medium sticky top-0 z-10 border-b border-slate-800 backdrop-blur">
+              <tr>
+                <th class="p-2.5 pl-4">Etapa</th>
+                <th class="p-2.5">Factura / Doc</th>
+                <th class="p-2.5">Código (SKU)</th>
+                <th class="p-2.5">Descripción</th>
+                <th class="p-2.5">Color</th>
+                <th class="p-2.5 text-center">Talla</th>
+                <th class="p-2.5">Canal Final</th>
+                <th class="p-2.5 text-right font-bold text-white">Cant.</th>
+                <th class="p-2.5 text-right">FOB</th>
+                <th class="p-2.5 text-right">PVP</th>
+                <th class="p-2.5">Fecha Factura</th>
+                <th class="p-2.5">Embarque</th>
+                <th class="p-2.5">Categoría</th>
+                <th class="p-2.5 pr-4">Seguimiento</th>
+              </tr>
+            </thead>
+            <tbody id="tableBody" class="divide-y divide-slate-800/60 font-mono text-[11px] text-slate-300"></tbody>
+          </table>
+          <div id="emptyState" class="hidden absolute inset-0 flex flex-col items-center justify-center p-6 text-center">
+            <h3 class="text-sm font-semibold text-slate-300">No hay registros cargados</h3>
+            <p class="text-xs text-slate-500 max-w-sm mt-1">Carga tu base de compras inicial o una OC trabajada para visualizar las asignaciones.</p>
           </div>
-          <h3 class="text-sm font-semibold text-slate-300">No hay registros cargados</h3>
-          <p class="text-xs text-slate-500 max-w-sm mt-1">Selecciona una temporada en el panel izquierdo o carga el archivo Excel inicial de compra con el botón superior.</p>
+        </div>
+      </section>
+
+      <!-- VIEW 2: REPORTE DEDICADO DE DROPS (CANCELACIONES) -->
+      <section id="viewDrops" class="flex-1 flex flex-col overflow-hidden hidden">
+        <!-- Top Drops Header Bar -->
+        <div class="p-4 border-b border-slate-800 bg-red-950/20 flex flex-wrap items-center justify-between gap-4">
+          <div>
+            <h2 class="text-sm font-bold text-red-400 flex items-center gap-2">
+              <svg class="w-4 h-4 text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path></svg>
+              <span>Auditoría de DROPS - Mercadería Cancelada por Marca</span>
+            </h2>
+            <p class="text-xs text-slate-400 mt-0.5">Listado detallado de unidades solicitadas en la compra que la marca recortó en la emisión de la OC.</p>
+          </div>
+
+          <div class="flex items-center gap-3">
+            <button onclick="exportDropsToExcel()" class="bg-red-600 hover:bg-red-500 text-white font-medium text-xs px-3.5 py-2 rounded-md transition flex items-center gap-1.5 shadow-lg shadow-red-900/30">
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
+              <span>Exportar Reporte de DROPS (.xlsx)</span>
+            </button>
+          </div>
         </div>
 
-        <!-- Loading Overlay -->
-        <div id="loadingOverlay" class="hidden absolute inset-0 bg-slate-950/80 backdrop-blur-sm z-30 flex flex-col items-center justify-center">
-          <div class="w-10 h-10 border-4 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
-          <p class="text-sm font-medium text-slate-200 mt-4" id="loadingText">Procesando archivo...</p>
-          <div class="w-64 bg-slate-800 rounded-full h-1.5 mt-3 overflow-hidden">
-            <div id="loadingBar" class="bg-blue-500 h-full w-0 transition-all duration-150"></div>
+        <!-- Filter bar for drops -->
+        <div class="p-3 border-b border-slate-800 bg-slate-900/40 flex items-center gap-3">
+          <input type="text" id="dropsSearchInput" oninput="renderDropsTable()" placeholder="Buscar SKU o Descripción en DROPS..." class="bg-slate-950 border border-slate-800 text-xs rounded px-3 py-1.5 text-slate-200 placeholder-slate-500 flex-1 max-w-sm">
+          <select id="dropsChannelFilter" onchange="renderDropsTable()" class="bg-slate-950 border border-slate-800 text-xs rounded px-2.5 py-1.5 text-slate-300">
+            <option value="ALL">Todos los Canales afectados</option>
+          </select>
+          <span class="text-xs text-slate-400 ml-auto" id="dropsCountSummary">0 items con DROP</span>
+        </div>
+
+        <!-- Drops Table -->
+        <div class="flex-1 overflow-auto bg-slate-950">
+          <table class="w-full text-left border-collapse text-xs whitespace-nowrap">
+            <thead class="bg-slate-900/90 text-slate-400 font-medium sticky top-0 z-10 border-b border-slate-800 backdrop-blur">
+              <tr>
+                <th class="p-2.5 pl-4">Estado</th>
+                <th class="p-2.5">Código (SKU)</th>
+                <th class="p-2.5">Descripción</th>
+                <th class="p-2.5">Color</th>
+                <th class="p-2.5 text-center">Talla</th>
+                <th class="p-2.5">Canal Afectado</th>
+                <th class="p-2.5 text-right text-red-400 font-bold">Unidades DROP</th>
+                <th class="p-2.5 text-right">FOB Unitario</th>
+                <th class="p-2.5 text-right font-bold text-red-400">Total FOB Perdido</th>
+                <th class="p-2.5">Categoría</th>
+                <th class="p-2.5 pr-4">Seguimiento</th>
+              </tr>
+            </thead>
+            <tbody id="dropsTableBody" class="divide-y divide-slate-800/60 font-mono text-[11px] text-slate-300"></tbody>
+          </table>
+          <div id="dropsEmptyState" class="hidden py-16 text-center">
+            <p class="text-sm font-semibold text-slate-400">No se registran DROPS en esta temporada</p>
+            <p class="text-xs text-slate-600 mt-1">Al cruzar una OC con cantidades menores a la compra, los faltantes se listarán aquí.</p>
           </div>
+        </div>
+      </section>
+
+      <!-- VIEW 3: MÉTRICAS Y ALLOCATION POR CANAL -->
+      <section id="viewChannels" class="flex-1 overflow-auto p-6 hidden">
+        <h2 class="text-sm font-bold text-white mb-4">Distribución y Asignación por Canal Comercial Final</h2>
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4" id="channelCardsContainer">
+          <!-- Populated dynamically -->
+        </div>
+      </section>
+
+      <!-- Loading Overlay -->
+      <div id="loadingOverlay" class="hidden absolute inset-0 bg-slate-950/80 backdrop-blur-sm z-30 flex flex-col items-center justify-center">
+        <div class="w-10 h-10 border-4 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
+        <p class="text-sm font-medium text-slate-200 mt-4" id="loadingText">Procesando archivo...</p>
+        <div class="w-64 bg-slate-800 rounded-full h-1.5 mt-3 overflow-hidden">
+          <div id="loadingBar" class="bg-blue-500 h-full w-0 transition-all duration-150"></div>
         </div>
       </div>
 
@@ -329,141 +398,85 @@
 
   <!-- ==================== MODALS ==================== -->
 
-  <!-- MODAL: NUEVA TEMPORADA / CARPETA -->
+  <!-- MODAL: NUEVA TEMPORADA -->
   <div id="newFolderModal" class="hidden fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
     <div class="bg-slate-900 border border-slate-800 rounded-xl w-full max-w-md p-5 shadow-2xl">
-      <h3 class="text-base font-bold text-white flex items-center gap-2">
-        <span>+ Nueva Carpeta de Temporada</span>
-      </h3>
+      <h3 class="text-base font-bold text-white">+ Nueva Carpeta de Temporada</h3>
       <p class="text-xs text-slate-400 mt-1">Crea un espacio dedicado para organizar pedidos por temporada (ej: FW26, SS26, FW27).</p>
       
       <div class="space-y-4 mt-4">
         <div>
           <label class="block text-xs font-semibold text-slate-300 mb-1">Marca</label>
-          <select id="modalBrandSelect" class="w-full bg-slate-950 border border-slate-800 rounded-md p-2 text-xs text-slate-200 focus:outline-none focus:border-blue-500">
+          <select id="modalBrandSelect" class="w-full bg-slate-950 border border-slate-800 rounded-md p-2 text-xs text-slate-200">
             <option value="adidas">ADIDAS</option>
             <option value="reebok">REEBOK</option>
           </select>
         </div>
         <div>
-          <label class="block text-xs font-semibold text-slate-300 mb-1">Nombre de la Temporada</label>
-          <input type="text" id="modalSeasonInput" placeholder="Ej: FW26 o SS26" class="w-full bg-slate-950 border border-slate-800 rounded-md p-2 text-xs text-slate-200 focus:outline-none focus:border-blue-500 uppercase font-mono">
+          <label class="block text-xs font-semibold text-slate-300 mb-1">Código de Temporada</label>
+          <input type="text" id="modalSeasonInput" placeholder="Ej: FW26 o SS26" class="w-full bg-slate-950 border border-slate-800 rounded-md p-2 text-xs text-slate-200 uppercase font-mono">
         </div>
       </div>
 
       <div class="flex justify-end gap-2 mt-6">
-        <button onclick="closeModal('newFolderModal')" class="px-4 py-2 text-xs rounded bg-slate-800 hover:bg-slate-700 text-slate-300 font-medium transition">Cancelar</button>
-        <button onclick="createFolderFromModal()" class="px-4 py-2 text-xs rounded bg-blue-600 hover:bg-blue-500 text-white font-semibold transition">Crear Carpeta</button>
+        <button onclick="closeModal('newFolderModal')" class="px-4 py-2 text-xs rounded bg-slate-800 text-slate-300 font-medium">Cancelar</button>
+        <button onclick="createFolderFromModal()" class="px-4 py-2 text-xs rounded bg-blue-600 hover:bg-blue-500 text-white font-semibold">Crear Carpeta</button>
       </div>
     </div>
   </div>
 
-  <!-- MODAL: CRUZAR FACTURA PARCIAL (AMORTIZACIÓN) -->
-  <div id="reconcileModal" class="hidden fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-    <div class="bg-slate-900 border border-slate-800 rounded-xl w-full max-w-2xl p-6 shadow-2xl">
-      <div class="flex items-center justify-between border-b border-slate-800 pb-3">
-        <div>
-          <h3 class="text-base font-bold text-white flex items-center gap-2">
-            <span class="w-2.5 h-2.5 rounded-full bg-amber-400"></span> Conciliación de Factura Parcial
-          </h3>
-          <p class="text-xs text-slate-400 mt-0.5">Amortiza las cantidades de la compra activa convirtiendo líneas '10A' en 'P24' con datos de factura.</p>
-        </div>
-        <button onclick="closeModal('reconcileModal')" class="text-slate-500 hover:text-slate-300 text-lg">&times;</button>
+  <!-- MODAL: OPCIONES DE CARGA OC TRABAJADA (DROP CONFIG) -->
+  <div id="ocConfigModal" class="hidden fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+    <div class="bg-slate-900 border border-slate-800 rounded-xl w-full max-w-lg p-5 shadow-2xl">
+      <h3 class="text-base font-bold text-white flex items-center gap-2">
+        <span class="w-2.5 h-2.5 rounded-full bg-amber-400"></span> Cruce de OC Trabajada & DROP
+      </h3>
+      <p class="text-xs text-slate-400 mt-1">¿Cómo deseas procesar los faltantes entre la compra original y lo facturado en esta OC?</p>
+
+      <div class="space-y-3 mt-4 text-xs">
+        <label class="flex items-start gap-3 p-3 rounded-lg border border-red-900/50 bg-red-950/20 cursor-pointer">
+          <input type="radio" name="dropOption" value="DROP" checked class="mt-0.5 text-red-500">
+          <div>
+            <strong class="text-red-300 block">Registrar como DROP (Cancelado definitivo)</strong>
+            <span class="text-slate-400">El saldo no facturado pasa a la etapa DROP con cálculo de FOB perdido y no queda pendiente.</span>
+          </div>
+        </label>
+
+        <label class="flex items-start gap-3 p-3 rounded-lg border border-slate-800 bg-slate-900/60 cursor-pointer">
+          <input type="radio" name="dropOption" value="PARCIAL" class="mt-0.5 text-blue-500">
+          <div>
+            <strong class="text-slate-200 block">Mantener como Entrega Parcial (10A)</strong>
+            <span class="text-slate-400">El saldo restante permanece en '10A-NOTIFICACION PRODUCTO DISPONIBLE' esperando próximas facturas.</span>
+          </div>
+        </label>
       </div>
 
-      <!-- Option Tabs: Manual or File Upload -->
-      <div class="flex border-b border-slate-800 mt-4 text-xs">
-        <button onclick="switchReconcileTab('upload')" id="tabBtnUpload" class="px-4 py-2 border-b-2 border-blue-500 text-blue-400 font-medium">Subir Archivo de Factura (.xlsx)</button>
-        <button onclick="switchReconcileTab('manual')" id="tabBtnManual" class="px-4 py-2 border-b-2 border-transparent text-slate-400 hover:text-slate-300">Ingreso Manual por SKU</button>
-      </div>
-
-      <!-- Tab Content: File Upload -->
-      <div id="reconcileTabUpload" class="mt-4 space-y-4">
-        <div class="grid grid-cols-3 gap-3">
-          <div>
-            <label class="block text-xs text-slate-400 mb-1">Nº Factura Global (opcional)</label>
-            <input type="text" id="recGlobalInvoice" placeholder="Ej: 4056" class="w-full bg-slate-950 border border-slate-800 text-xs rounded p-2 text-slate-200">
-          </div>
-          <div>
-            <label class="block text-xs text-slate-400 mb-1">Nº Documento (opcional)</label>
-            <input type="text" id="recGlobalDoc" placeholder="Ej: 3906" class="w-full bg-slate-950 border border-slate-800 text-xs rounded p-2 text-slate-200">
-          </div>
-          <div>
-            <label class="block text-xs text-slate-400 mb-1">Fecha Factura</label>
-            <input type="date" id="recGlobalDate" class="w-full bg-slate-950 border border-slate-800 text-xs rounded p-2 text-slate-200">
-          </div>
-        </div>
-
-        <div class="border-2 border-dashed border-slate-800 hover:border-slate-700 rounded-lg p-6 text-center cursor-pointer bg-slate-950/50">
-          <input type="file" id="reconcileFileInput" accept=".xls,.xlsx,.csv" class="hidden" onchange="previewInvoiceFile(event)">
-          <label for="reconcileFileInput" class="cursor-pointer flex flex-col items-center">
-            <svg class="w-10 h-10 text-slate-500 mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"></path></svg>
-            <span class="text-xs font-semibold text-slate-300">Haz clic para seleccionar el archivo de factura o entrega</span>
-            <span class="text-[11px] text-slate-500 mt-1">Columnas requeridas: Código/SKU, Talla (opcional) y Cantidad facturada.</span>
-          </label>
-        </div>
-        <div id="invoiceFilePreview" class="text-xs text-emerald-400 font-mono hidden"></div>
-      </div>
-
-      <!-- Tab Content: Manual SKU -->
-      <div id="reconcileTabManual" class="mt-4 space-y-3 hidden">
-        <div class="grid grid-cols-2 gap-3">
-          <div>
-            <label class="block text-xs text-slate-400 mb-1">Nº Factura</label>
-            <input type="text" id="manInvoice" placeholder="Ej: 4120" class="w-full bg-slate-950 border border-slate-800 text-xs rounded p-2 text-slate-200 font-mono">
-          </div>
-          <div>
-            <label class="block text-xs text-slate-400 mb-1">Nº Documento</label>
-            <input type="text" id="manDoc" placeholder="Ej: 3950" class="w-full bg-slate-950 border border-slate-800 text-xs rounded p-2 text-slate-200 font-mono">
-          </div>
-        </div>
-        <div class="grid grid-cols-3 gap-3">
-          <div>
-            <label class="block text-xs text-slate-400 mb-1">Código (SKU)</label>
-            <input type="text" id="manSku" placeholder="Ej: 100074272" class="w-full bg-slate-950 border border-slate-800 text-xs rounded p-2 text-slate-200 font-mono uppercase">
-          </div>
-          <div>
-            <label class="block text-xs text-slate-400 mb-1">Talla (opcional)</label>
-            <input type="text" id="manSize" placeholder="Ej: 10 o L" class="w-full bg-slate-950 border border-slate-800 text-xs rounded p-2 text-slate-200 font-mono">
-          </div>
-          <div>
-            <label class="block text-xs text-slate-400 mb-1">Cantidad Facturada</label>
-            <input type="number" id="manQty" min="1" placeholder="Ej: 15" class="w-full bg-slate-950 border border-slate-800 text-xs rounded p-2 text-slate-200 font-mono">
-          </div>
-        </div>
-      </div>
-
-      <div class="flex justify-end gap-2 mt-6 pt-3 border-t border-slate-800">
-        <button onclick="closeModal('reconcileModal')" class="px-4 py-2 text-xs rounded bg-slate-800 hover:bg-slate-700 text-slate-300 font-medium">Cerrar</button>
-        <button onclick="executeAmortization()" class="px-4 py-2 text-xs rounded bg-amber-600 hover:bg-amber-500 text-white font-semibold flex items-center gap-1.5 shadow-sm">
-          <span>Aplicar Conciliación & Amortizar</span>
-        </button>
+      <div class="flex justify-end gap-2 mt-6">
+        <button onclick="closeModal('ocConfigModal')" class="px-4 py-2 text-xs rounded bg-slate-800 text-slate-300">Cancelar</button>
+        <button onclick="confirmAndExecuteOC()" class="px-4 py-2 text-xs rounded bg-amber-600 hover:bg-amber-500 text-white font-semibold">Procesar Cruce de OC</button>
       </div>
     </div>
   </div>
 
-  <!-- TOAST NOTIFICATION CONTAINER -->
+  <!-- TOAST CONTAINER -->
   <div id="toastContainer" class="fixed bottom-5 right-5 z-50 flex flex-col gap-2 pointer-events-none"></div>
 
   <!-- JAVASCRIPT LOGIC -->
   <script>
     /**
-     * EOT Portal Engine
-     * High performance order tracker with IndexedDB storage & SheetJS integration.
+     * EOT Portal Engine - Extended with DROPS Audit & Final Channels Allocation
      */
-
-    // --- State Variables ---
     let currentBrand = 'reebok';
     let currentSeason = 'FW26';
+    let activeTab = 'matriz';
     let db = null;
-    let records = [];           // In-memory working copy for the active folder
-    let filteredRecords = [];   // Filtered view for pagination
+    let records = [];           
+    let filteredRecords = [];   
     let currentPage = 1;
     let pageSize = 100;
     let searchDebounceTimer = null;
-    let pendingInvoiceItems = []; // For invoice reconciliation
+    let cachedOCToProcess = null;
 
-    // The 25 canonical EOT columns
     const EOT_COLUMNS = [
       "Seguimiento", "Temporada", "Marca", "Grupo", "Categoría", "Actividad",
       "Referencia compra", "Código", "Color", "Talla", "Talla marca", "Descripción",
@@ -471,18 +484,16 @@
       "P4", "PMY", "Etapa", "Documento", "Factura", "Fecha de factura", "Embarque"
     ];
 
-    // Stage Constants
     const STAGE_PENDIENTE = '10A-NOTIFICACION PRODUCTO DISPONIBLE';
     const STAGE_FACTURADO = 'P24-INSTRUCCIÓN- GENERACION DE EMBARQUE';
+    const STAGE_DROP = 'DROP-CANCELADO MARCA';
 
-    // --- IndexedDB Management ---
     const DB_NAME = 'EOT_Portal_Database';
     const DB_VERSION = 1;
 
     function initDatabase() {
       return new Promise((resolve, reject) => {
         const request = indexedDB.open(DB_NAME, DB_VERSION);
-
         request.onupgradeneeded = (e) => {
           const dbInstance = e.target.result;
           if (!dbInstance.objectStoreNames.contains('folders')) {
@@ -493,22 +504,18 @@
             orderStore.createIndex('folderKey', ['brand', 'season'], { unique: false });
           }
         };
-
         request.onsuccess = (e) => {
           db = e.target.result;
           document.getElementById('storageCounter').textContent = 'IndexedDB: Activo';
           resolve(db);
         };
-
         request.onerror = (e) => {
           console.error("IndexedDB error:", e);
-          showToast('Error al inicializar IndexedDB', 'error');
           reject(e);
         };
       });
     }
 
-    // --- Seed Initial Folders if Empty ---
     async function seedDefaultFolders() {
       const folders = await getStoredFolders();
       if (folders.length === 0) {
@@ -595,7 +602,6 @@
       });
     }
 
-    // --- Folder Selection & Data Fetching ---
     async function selectFolder(brand, season) {
       currentBrand = brand;
       currentSeason = season;
@@ -615,6 +621,8 @@
         showLoading(false);
         populateChannelFilter();
         applyFilters();
+        renderDropsTable();
+        renderChannelStats();
         renderFoldersList();
       };
 
@@ -624,7 +632,6 @@
       };
     }
 
-    // --- Create New Season Folder ---
     async function createFolderFromModal() {
       const brand = document.getElementById('modalBrandSelect').value;
       const seasonInput = document.getElementById('modalSeasonInput').value.trim().toUpperCase();
@@ -650,7 +657,6 @@
       selectFolder(brand, seasonInput);
     }
 
-    // --- Loading Overlay Controls ---
     function showLoading(show, message = 'Procesando...', progress = 0) {
       const overlay = document.getElementById('loadingOverlay');
       const msg = document.getElementById('loadingText');
@@ -665,17 +671,54 @@
       }
     }
 
-    // --- File Import Engine (Base or Extra) ---
+    // --- Tab Switching ---
+    function switchAppTab(tab) {
+      activeTab = tab;
+      const navMatriz = document.getElementById('navTabMatriz');
+      const navDrops = document.getElementById('navTabDrops');
+      const navChannels = document.getElementById('navTabChannels');
+
+      const viewMatriz = document.getElementById('viewMatriz');
+      const viewDrops = document.getElementById('viewDrops');
+      const viewChannels = document.getElementById('viewChannels');
+      const exportLabel = document.getElementById('btnExportLabel');
+
+      [navMatriz, navDrops, navChannels].forEach(el => {
+        el.className = 'px-4 py-2 text-xs font-semibold rounded-t-lg border-b-2 border-transparent text-slate-400 hover:text-slate-200 transition flex items-center gap-2';
+      });
+
+      viewMatriz.classList.add('hidden');
+      viewDrops.classList.add('hidden');
+      viewChannels.classList.add('hidden');
+
+      if (tab === 'matriz') {
+        navMatriz.className = 'px-4 py-2 text-xs font-semibold rounded-t-lg border-b-2 border-blue-500 text-blue-400 bg-slate-900 transition flex items-center gap-2';
+        viewMatriz.classList.remove('hidden');
+        exportLabel.textContent = 'Exportar Situación (.xlsx)';
+      } else if (tab === 'drops') {
+        navDrops.className = 'px-4 py-2 text-xs font-semibold rounded-t-lg border-b-2 border-red-500 text-red-400 bg-slate-900 transition flex items-center gap-2';
+        viewDrops.classList.remove('hidden');
+        exportLabel.textContent = 'Exportar Reporte DROPS (.xlsx)';
+        renderDropsTable();
+      } else if (tab === 'channels') {
+        navChannels.className = 'px-4 py-2 text-xs font-semibold rounded-t-lg border-b-2 border-indigo-500 text-indigo-400 bg-slate-900 transition flex items-center gap-2';
+        viewChannels.classList.remove('hidden');
+        exportLabel.textContent = 'Exportar Matriz Canales (.xlsx)';
+        renderChannelStats();
+      }
+    }
+
+    // --- Base File Import ---
     function handleFileImport(event, mode) {
       const file = event.target.files[0];
       if (!file) return;
 
-      showLoading(true, `Leyendo archivo Excel (${(file.size / 1024 / 1024).toFixed(2)} MB)...`, 20);
+      showLoading(true, `Leyendo archivo base (${(file.size / 1024 / 1024).toFixed(2)} MB)...`, 20);
 
       const reader = new FileReader();
       reader.onload = async function(e) {
         try {
-          showLoading(true, 'Analizando columnas y estructurando pedidos...', 50);
+          showLoading(true, 'Analizando columnas...', 50);
           const data = new Uint8Array(e.target.result);
           const workbook = XLSX.read(data, { type: 'array', cellDates: true });
           const firstSheet = workbook.Sheets[workbook.SheetNames[0]];
@@ -687,12 +730,11 @@
             return;
           }
 
-          showLoading(true, `Validando ${rawRows.length.toLocaleString()} filas...`, 70);
-
-          // Standardize rows to the 25 columns
           const formattedRecords = rawRows.map(row => {
             const rawEtapa = (row['Etapa'] || row['ETAPA'] || '').toString().trim();
-            const normalizedEtapa = rawEtapa.includes('P24') ? STAGE_FACTURADO : STAGE_PENDIENTE;
+            let normalizedEtapa = STAGE_PENDIENTE;
+            if (rawEtapa.includes('P24')) normalizedEtapa = STAGE_FACTURADO;
+            if (rawEtapa.toUpperCase().includes('DROP')) normalizedEtapa = STAGE_DROP;
 
             return {
               brand: currentBrand,
@@ -725,14 +767,10 @@
             };
           });
 
-          showLoading(true, 'Guardando en la base de datos de alta capacidad...', 85);
-
-          // Write to IndexedDB
           const tx = db.transaction('orders', 'readwrite');
           const store = tx.objectStore('orders');
 
           if (mode === 'base') {
-            // Delete existing records for this brand/season if base reload requested
             const index = store.index('folderKey');
             const keyRange = IDBKeyRange.only([currentBrand, currentSeason]);
             const cursorReq = index.openCursor(keyRange);
@@ -750,42 +788,186 @@
             });
           }
 
-          // Insert records in batches
           for (let i = 0; i < formattedRecords.length; i++) {
             store.add(formattedRecords[i]);
           }
 
           await new Promise(resolve => tx.oncomplete = resolve);
-
           showLoading(false);
-          showToast(`${formattedRecords.length.toLocaleString()} registros cargados correctamente`, 'success');
-          
-          // Reset file inputs
+          showToast(`${formattedRecords.length.toLocaleString()} filas cargadas en ${currentBrand.toUpperCase()} ${currentSeason}`, 'success');
           event.target.value = '';
           selectFolder(currentBrand, currentSeason);
-
         } catch (err) {
-          console.error("Error processing file:", err);
+          console.error(err);
           showLoading(false);
-          showToast('Error al procesar el archivo Excel. Verifica el formato.', 'error');
+          showToast('Error al procesar el archivo Excel', 'error');
         }
       };
-
       reader.readAsArrayBuffer(file);
+    }
+
+    // --- OC Trabajada Handler (Handles Final Reference, Canal Final, and Amortization/DROP) ---
+    function handleOCTrabajadaUpload(event) {
+      const file = event.target.files[0];
+      if (!file) return;
+
+      if (records.length === 0) {
+        showToast('Debes cargar primero la base inicial de compra para amortizar', 'error');
+        event.target.value = '';
+        return;
+      }
+
+      showLoading(true, 'Leyendo archivo de OC Trabajada...', 30);
+
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        try {
+          const data = new Uint8Array(e.target.result);
+          const workbook = XLSX.read(data, { type: 'array' });
+          
+          // Look for 'OC' sheet or fallback to first sheet
+          const sheetName = workbook.SheetNames.includes('OC') ? 'OC' : workbook.SheetNames[0];
+          const rawRows = XLSX.utils.sheet_to_json(workbook.Sheets[sheetName], { defval: "" });
+
+          if (!rawRows || rawRows.length === 0) {
+            showLoading(false);
+            showToast('No se encontraron registros en la hoja de OC', 'error');
+            return;
+          }
+
+          cachedOCToProcess = rawRows.map(r => ({
+            sku: String(r['SKU'] || r['Código'] || r['CODIGO'] || r['SAP'] || '').trim(),
+            color: String(r['COLOR'] || r['Color'] || '').trim(),
+            size: String(r['TALLA'] || r['Talla'] || r['TALLA MARCA'] || '').trim(),
+            qty: parseInt(r['CANTIDAD FACT'] || r['CANTIDAD'] || r['Cantidad'] || 0, 10),
+            invoice: String(r['FACTURA'] || r['Factura'] || '').trim(),
+            doc: String(r['DOCUMENTO'] || r['Documento'] || '').trim(),
+            date: formatDateValue(r['FECHA FACTURA'] || r['Fecha de factura']),
+            embarque: String(r['EMBARQUE'] || r['Embarque'] || 'POR CONFIRMAR'),
+            refFinal: String(r['REFERENCIA COMPRA FINAL'] || r['REFERENCIA COMPRA'] || r['CANAL FINAL'] || r['TIENDA'] || '').trim()
+          })).filter(x => x.sku && x.qty > 0);
+
+          showLoading(false);
+          openModal('ocConfigModal');
+          event.target.value = '';
+
+        } catch (err) {
+          console.error(err);
+          showLoading(false);
+          showToast('Error al leer el archivo de OC Trabajada', 'error');
+        }
+      };
+      reader.readAsArrayBuffer(file);
+    }
+
+    async function confirmAndExecuteOC() {
+      const dropMode = document.querySelector('input[name="dropOption"]:checked').value;
+      closeModal('ocConfigModal');
+
+      if (!cachedOCToProcess || cachedOCToProcess.length === 0) {
+        showToast('No hay datos en cola de la OC', 'error');
+        return;
+      }
+
+      showLoading(true, 'Amortizando órdenes, asignando canales finales y auditando DROPS...');
+
+      let amortizedCount = 0;
+      let dropsCount = 0;
+      const ordersToUpdate = [];
+      const newOrdersToAdd = [];
+
+      // Process each item in the worked OC
+      for (const ocItem of cachedOCToProcess) {
+        let remainingToSatisfy = ocItem.qty;
+
+        for (let i = 0; i < records.length; i++) {
+          const row = records[i];
+
+          // Match by SKU and Color (and Size if present)
+          const skuMatch = row.Código.toLowerCase() === ocItem.sku.toLowerCase();
+          const colorMatch = !ocItem.color || !row.Color || row.Color.toLowerCase() === ocItem.color.toLowerCase();
+          const sizeMatch = !ocItem.size || !row.Talla || row.Talla.toLowerCase() === ocItem.size.toLowerCase();
+
+          if (row.Etapa.includes('10A') && skuMatch && colorMatch && sizeMatch) {
+            const availableQty = row.Cantidad;
+
+            if (remainingToSatisfy >= availableQty) {
+              // Row is fully invoiced
+              row.Etapa = STAGE_FACTURADO;
+              row.Factura = ocItem.invoice || row.Factura;
+              row.Documento = ocItem.doc || row.Documento;
+              row["Fecha de factura"] = ocItem.date || row["Fecha de factura"];
+              row.Embarque = ocItem.embarque || row.Embarque;
+              if (ocItem.refFinal) row["Referencia compra"] = ocItem.refFinal;
+
+              remainingToSatisfy -= availableQty;
+              amortizedCount += availableQty;
+              ordersToUpdate.push(row);
+
+            } else if (remainingToSatisfy > 0) {
+              // Partial delivery from row: split
+              // 1. Invoiced Portion
+              const invoicedPortion = {
+                ...row,
+                id: undefined,
+                Cantidad: remainingToSatisfy,
+                Etapa: STAGE_FACTURADO,
+                Factura: ocItem.invoice,
+                Documento: ocItem.doc,
+                "Fecha de factura": ocItem.date,
+                Embarque: ocItem.embarque,
+                "Referencia compra": ocItem.refFinal || row["Referencia compra"]
+              };
+              newOrdersToAdd.push(invoicedPortion);
+
+              // 2. Remainder
+              const diffQty = availableQty - remainingToSatisfy;
+              row.Cantidad = diffQty;
+
+              if (dropMode === 'DROP') {
+                row.Etapa = STAGE_DROP;
+                dropsCount += diffQty;
+              } else {
+                row.Etapa = STAGE_PENDIENTE;
+              }
+
+              amortizedCount += remainingToSatisfy;
+              remainingToSatisfy = 0;
+              ordersToUpdate.push(row);
+            }
+
+            if (remainingToSatisfy === 0) break;
+          }
+        }
+      }
+
+      // Persist updates
+      const tx = db.transaction('orders', 'readwrite');
+      const store = tx.objectStore('orders');
+
+      for (const u of ordersToUpdate) store.put(u);
+      for (const a of newOrdersToAdd) store.add(a);
+
+      await new Promise(res => tx.oncomplete = res);
+
+      cachedOCToProcess = null;
+      showLoading(false);
+      showToast(`OC procesada: ${amortizedCount.toLocaleString()} uds facturadas (P24) y ${dropsCount.toLocaleString()} uds en DROP`, 'success');
+
+      selectFolder(currentBrand, currentSeason);
     }
 
     function formatDateValue(val) {
       if (!val) return '';
-      if (val instanceof Date) {
-        return val.toISOString().split('T')[0];
-      }
+      if (val instanceof Date) return val.toISOString().split('T')[0];
       return String(val);
     }
 
-    // --- Channel Filter Population ---
     function populateChannelFilter() {
       const channelSelect = document.getElementById('filterChannel');
+      const dropsChannelSelect = document.getElementById('dropsChannelFilter');
       const channels = new Set();
+
       for (let i = 0; i < records.length; i++) {
         if (records[i]["Referencia compra"]) {
           channels.add(records[i]["Referencia compra"]);
@@ -793,17 +975,23 @@
       }
 
       channelSelect.innerHTML = '<option value="ALL">Todos los Canales</option>';
+      dropsChannelSelect.innerHTML = '<option value="ALL">Todos los Canales afectados</option>';
+
       Array.from(channels).sort().forEach(ch => {
-        const opt = document.createElement('option');
-        opt.value = ch;
-        opt.textContent = ch;
-        channelSelect.appendChild(opt);
+        const opt1 = document.createElement('option');
+        opt1.value = ch;
+        opt1.textContent = ch;
+        channelSelect.appendChild(opt1);
+
+        const opt2 = document.createElement('option');
+        opt2.value = ch;
+        opt2.textContent = ch;
+        dropsChannelSelect.appendChild(opt2);
       });
 
       document.getElementById('kpiChannelCount').textContent = channels.size;
     }
 
-    // --- Filtering, Debounce & KPIs ---
     function debounceSearch() {
       clearTimeout(searchDebounceTimer);
       searchDebounceTimer = setTimeout(() => {
@@ -817,30 +1005,21 @@
       const channelFilter = document.getElementById('filterChannel').value;
 
       filteredRecords = records.filter(row => {
-        // Stage filter
         if (stageFilter === '10A' && !row.Etapa.includes('10A')) return false;
         if (stageFilter === 'P24' && !row.Etapa.includes('P24')) return false;
+        if (stageFilter === 'DROP' && !row.Etapa.toUpperCase().includes('DROP')) return false;
 
-        // Channel filter
         if (channelFilter !== 'ALL' && row["Referencia compra"] !== channelFilter) return false;
 
-        // Text search
         if (searchTerm) {
           const sku = (row.Código || '').toLowerCase();
           const desc = (row.Descripción || '').toLowerCase();
           const col = (row.Color || '').toLowerCase();
-          const size = (row.Talla || '').toLowerCase();
-          const ref = (row["Referencia compra"] || '').toLowerCase();
           const fact = (row.Factura || '').toLowerCase();
+          const ref = (row["Referencia compra"] || '').toLowerCase();
 
-          return sku.includes(searchTerm) ||
-                 desc.includes(searchTerm) ||
-                 col.includes(searchTerm) ||
-                 size.includes(searchTerm) ||
-                 ref.includes(searchTerm) ||
-                 fact.includes(searchTerm);
+          return sku.includes(searchTerm) || desc.includes(searchTerm) || col.includes(searchTerm) || fact.includes(searchTerm) || ref.includes(searchTerm);
         }
-
         return true;
       });
 
@@ -853,18 +1032,21 @@
       let totalUnits = 0;
       let facturadoUnits = 0;
       let pendienteUnits = 0;
+      let dropUnits = 0;
+      let dropFob = 0;
       let totalFOB = 0;
-      let totalPVP = 0;
 
       for (let i = 0; i < records.length; i++) {
         const r = records[i];
         const qty = r.Cantidad || 0;
         totalUnits += qty;
         totalFOB += (r.FOB || 0) * qty;
-        totalPVP += (r.PVP || 0) * qty;
 
         if (r.Etapa.includes('P24')) {
           facturadoUnits += qty;
+        } else if (r.Etapa.toUpperCase().includes('DROP')) {
+          dropUnits += qty;
+          dropFob += (r.FOB || 0) * qty;
         } else {
           pendienteUnits += qty;
         }
@@ -874,17 +1056,17 @@
       const pendPct = totalUnits > 0 ? ((pendienteUnits / totalUnits) * 100).toFixed(1) : 0;
 
       document.getElementById('kpiTotalUnits').textContent = totalUnits.toLocaleString();
-      document.getElementById('kpiTotalRows').textContent = `${records.length.toLocaleString()} filas registradas`;
+      document.getElementById('kpiTotalRows').textContent = `${records.length.toLocaleString()} filas`;
       document.getElementById('kpiFacturadoUnits').textContent = facturadoUnits.toLocaleString();
-      document.getElementById('kpiFacturadoPct').textContent = `${factPct}% de cumplimiento`;
+      document.getElementById('kpiFacturadoPct').textContent = `${factPct}% cumplido`;
       document.getElementById('kpiPendienteUnits').textContent = pendienteUnits.toLocaleString();
       document.getElementById('kpiPendientePct').textContent = `${pendPct}% pendiente`;
-
+      document.getElementById('kpiDropUnits').textContent = dropUnits.toLocaleString();
+      document.getElementById('kpiDropFob').textContent = `$${Math.round(dropFob).toLocaleString()} FOB cancelado`;
       document.getElementById('kpiFobTotal').textContent = `$${Math.round(totalFOB).toLocaleString()}`;
-      document.getElementById('kpiPvpTotal').textContent = `$${Math.round(totalPVP).toLocaleString()}`;
+      document.getElementById('tabDropsBadge').textContent = dropUnits.toLocaleString();
     }
 
-    // --- Dynamic Table Pagination ---
     function renderTablePage() {
       const tbody = document.getElementById('tableBody');
       const emptyState = document.getElementById('emptyState');
@@ -915,9 +1097,16 @@
 
       for (let i = startIndex; i < endIndex; i++) {
         const item = filteredRecords[i];
-        const isFacturado = item.Etapa.includes('P24');
-        const badgeClass = isFacturado ? 'badge-p24' : 'badge-10a';
-        const badgeText = isFacturado ? 'P24 - FACTURADO' : '10A - PENDIENTE';
+        let badgeClass = 'badge-10a';
+        let badgeText = '10A - PENDIENTE';
+
+        if (item.Etapa.includes('P24')) {
+          badgeClass = 'badge-p24';
+          badgeText = 'P24 - FACTURADO';
+        } else if (item.Etapa.toUpperCase().includes('DROP')) {
+          badgeClass = 'badge-drop';
+          badgeText = 'DROP - CANCELADO';
+        }
 
         const tr = document.createElement('tr');
         tr.className = 'hover:bg-slate-900/60 transition';
@@ -949,7 +1138,6 @@
         `;
         fragment.appendChild(tr);
       }
-
       tbody.appendChild(fragment);
     }
 
@@ -976,213 +1164,165 @@
       renderTablePage();
     }
 
-    // --- Reconciliation & Amortization Engine ---
-    function switchReconcileTab(tab) {
-      const btnUpload = document.getElementById('tabBtnUpload');
-      const btnManual = document.getElementById('tabBtnManual');
-      const panelUpload = document.getElementById('reconcileTabUpload');
-      const panelManual = document.getElementById('reconcileTabManual');
+    // --- Dedicated DROPS View Logic ---
+    function renderDropsTable() {
+      const search = (document.getElementById('dropsSearchInput')?.value || '').toLowerCase();
+      const channel = document.getElementById('dropsChannelFilter')?.value || 'ALL';
+      const tbody = document.getElementById('dropsTableBody');
+      const emptyState = document.getElementById('dropsEmptyState');
+      if (!tbody) return;
 
-      if (tab === 'upload') {
-        btnUpload.className = 'px-4 py-2 border-b-2 border-blue-500 text-blue-400 font-medium';
-        btnManual.className = 'px-4 py-2 border-b-2 border-transparent text-slate-400 hover:text-slate-300';
-        panelUpload.classList.remove('hidden');
-        panelManual.classList.add('hidden');
+      tbody.innerHTML = '';
+
+      const dropRows = records.filter(r => {
+        if (!r.Etapa.toUpperCase().includes('DROP')) return false;
+        if (channel !== 'ALL' && r["Referencia compra"] !== channel) return false;
+        if (search) {
+          const sku = (r.Código || '').toLowerCase();
+          const desc = (r.Descripción || '').toLowerCase();
+          return sku.includes(search) || desc.includes(search);
+        }
+        return true;
+      });
+
+      document.getElementById('dropsCountSummary').textContent = `${dropRows.length.toLocaleString()} líneas con recorte`;
+
+      if (dropRows.length === 0) {
+        emptyState.classList.remove('hidden');
+        return;
+      }
+      emptyState.classList.add('hidden');
+
+      const fragment = document.createDocumentFragment();
+      for (const row of dropRows) {
+        const lostFob = (row.Cantidad || 0) * (row.FOB || 0);
+        const tr = document.createElement('tr');
+        tr.className = 'hover:bg-red-950/20 transition';
+        tr.innerHTML = `
+          <td class="p-2.5 pl-4"><span class="badge-drop px-2 py-0.5 rounded text-[10px] font-bold">DROP</span></td>
+          <td class="p-2.5 font-bold text-red-400">${row.Código}</td>
+          <td class="p-2.5 max-w-[220px] truncate text-slate-300">${row.Descripción}</td>
+          <td class="p-2.5 text-slate-400">${row.Color}</td>
+          <td class="p-2.5 text-center font-bold text-slate-200">${row.Talla}</td>
+          <td class="p-2.5"><span class="bg-slate-800 text-slate-300 px-2 py-0.5 rounded text-[10px]">${row["Referencia compra"]}</span></td>
+          <td class="p-2.5 text-right font-bold text-red-400 text-xs">${(row.Cantidad || 0).toLocaleString()}</td>
+          <td class="p-2.5 text-right text-slate-400">$${(row.FOB || 0).toFixed(2)}</td>
+          <td class="p-2.5 text-right font-bold text-red-400">$${lostFob.toFixed(2)}</td>
+          <td class="p-2.5 text-slate-500 text-[10px]">${row.Categoría}</td>
+          <td class="p-2.5 pr-4 text-slate-500 text-[10px]">${row.Seguimiento}</td>
+        `;
+        fragment.appendChild(tr);
+      }
+      tbody.appendChild(fragment);
+    }
+
+    function exportDropsToExcel() {
+      const dropRows = records.filter(r => r.Etapa.toUpperCase().includes('DROP'));
+      if (dropRows.length === 0) {
+        showToast('No existen registros de DROPS para exportar', 'error');
+        return;
+      }
+
+      const formatted = dropRows.map(r => ({
+        "Seguimiento": r.Seguimiento,
+        "Temporada": r.Temporada,
+        "Marca": r.Marca,
+        "Código (SKU)": r.Código,
+        "Descripción": r.Descripción,
+        "Color": r.Color,
+        "Talla": r.Talla,
+        "Canal Afectado": r["Referencia compra"],
+        "Cantidad Cancelada (DROP)": r.Cantidad,
+        "Costo FOB Unitario": r.FOB,
+        "Total FOB Cancelado ($)": (r.Cantidad * r.FOB).toFixed(2),
+        "PVP": r.PVP,
+        "Categoría": r.Categoría
+      }));
+
+      const ws = XLSX.utils.json_to_sheet(formatted);
+      const wb = XLSX.utils.book_new();
+      XLSX.utils.book_append_sheet(wb, ws, "REPORTE_DROPS");
+      XLSX.writeFile(wb, `REPORTE_DROPS_${currentBrand.toUpperCase()}_${currentSeason}_${new Date().toISOString().split('T')[0]}.xlsx`);
+      showToast('Reporte de DROPS exportado exitosamente', 'success');
+    }
+
+    // --- Channel Allocation View ---
+    function renderChannelStats() {
+      const container = document.getElementById('channelCardsContainer');
+      if (!container) return;
+      container.innerHTML = '';
+
+      const channelMap = {};
+      for (const r of records) {
+        const ch = r["Referencia compra"] || 'GENERAL';
+        if (!channelMap[ch]) {
+          channelMap[ch] = { total: 0, facturado: 0, drops: 0, pendiente: 0, fob: 0 };
+        }
+        const q = r.Cantidad || 0;
+        channelMap[ch].total += q;
+        channelMap[ch].fob += (r.FOB || 0) * q;
+
+        if (r.Etapa.includes('P24')) channelMap[ch].facturado += q;
+        else if (r.Etapa.toUpperCase().includes('DROP')) channelMap[ch].drops += q;
+        else channelMap[ch].pendiente += q;
+      }
+
+      Object.keys(channelMap).sort().forEach(ch => {
+        const data = channelMap[ch];
+        const fillRate = data.total > 0 ? ((data.facturado / data.total) * 100).toFixed(1) : 0;
+        const card = document.createElement('div');
+        card.className = 'bg-slate-900 border border-slate-800 rounded-xl p-4 shadow-sm';
+        card.innerHTML = `
+          <div class="flex items-center justify-between border-b border-slate-800 pb-2 mb-3">
+            <span class="font-bold text-white text-xs font-mono uppercase">${ch}</span>
+            <span class="text-xs px-2 py-0.5 rounded font-bold ${fillRate > 70 ? 'bg-emerald-500/20 text-emerald-400' : 'bg-amber-500/20 text-amber-400'}">${fillRate}% Fill Rate</span>
+          </div>
+          <div class="grid grid-cols-2 gap-2 text-xs">
+            <div class="bg-slate-950 p-2 rounded">
+              <span class="text-[10px] text-slate-500 block">Total Pedido</span>
+              <strong class="text-slate-200 font-mono">${data.total.toLocaleString()}</strong>
+            </div>
+            <div class="bg-slate-950 p-2 rounded">
+              <span class="text-[10px] text-emerald-500 block">Facturado (P24)</span>
+              <strong class="text-emerald-400 font-mono">${data.facturado.toLocaleString()}</strong>
+            </div>
+            <div class="bg-slate-950 p-2 rounded">
+              <span class="text-[10px] text-amber-500 block">Pendiente (10A)</span>
+              <strong class="text-amber-400 font-mono">${data.pendiente.toLocaleString()}</strong>
+            </div>
+            <div class="bg-slate-950 p-2 rounded">
+              <span class="text-[10px] text-red-500 block">DROPS</span>
+              <strong class="text-red-400 font-mono">${data.drops.toLocaleString()}</strong>
+            </div>
+          </div>
+          <div class="mt-3 pt-2 border-t border-slate-800/80 flex justify-between text-[11px] text-slate-400">
+            <span>FOB Total:</span>
+            <span class="font-mono text-white">$${Math.round(data.fob).toLocaleString()}</span>
+          </div>
+        `;
+        container.appendChild(card);
+      });
+    }
+
+    function handleSmartExport() {
+      if (activeTab === 'drops') {
+        exportDropsToExcel();
       } else {
-        btnManual.className = 'px-4 py-2 border-b-2 border-blue-500 text-blue-400 font-medium';
-        btnUpload.className = 'px-4 py-2 border-b-2 border-transparent text-slate-400 hover:text-slate-300';
-        panelManual.classList.remove('hidden');
-        panelUpload.classList.add('hidden');
+        exportToExcel();
       }
     }
 
-    function previewInvoiceFile(event) {
-      const file = event.target.files[0];
-      if (!file) return;
-
-      const reader = new FileReader();
-      reader.onload = function(e) {
-        try {
-          const data = new Uint8Array(e.target.result);
-          const workbook = XLSX.read(data, { type: 'array' });
-          const firstSheet = workbook.Sheets[workbook.SheetNames[0]];
-          const rows = XLSX.utils.sheet_to_json(firstSheet, { defval: "" });
-
-          if (!rows || rows.length === 0) {
-            showToast('El archivo no contiene filas válidas', 'error');
-            return;
-          }
-
-          pendingInvoiceItems = rows.map(r => ({
-            sku: String(r['Código'] || r['CODIGO'] || r['SKU'] || r['Item'] || '').trim(),
-            size: String(r['Talla'] || r['TALLA'] || r['Size'] || '').trim(),
-            color: String(r['Color'] || r['COLOR'] || '').trim(),
-            qty: parseInt(r['Cantidad'] || r['CANTIDAD'] || r['Qty'] || 0, 10),
-            invoice: String(r['Factura'] || r['FACTURA'] || '').trim(),
-            doc: String(r['Documento'] || r['DOCUMENTO'] || '').trim(),
-            date: formatDateValue(r['Fecha de factura'] || r['FECHA DE FACTURA'])
-          })).filter(x => x.sku && x.qty > 0);
-
-          const previewEl = document.getElementById('invoiceFilePreview');
-          previewEl.textContent = `✓ Archivo cargado: ${pendingInvoiceItems.length} ítems listos para cruzar.`;
-          previewEl.classList.remove('hidden');
-
-          showToast(`${pendingInvoiceItems.length} líneas de factura leídas`, 'success');
-
-        } catch (err) {
-          console.error(err);
-          showToast('Error al leer el archivo de factura', 'error');
-        }
-      };
-      reader.readAsArrayBuffer(file);
-    }
-
-    async function executeAmortization() {
-      // Determine if manual or file
-      const isManual = !document.getElementById('reconcileTabManual').classList.contains('hidden');
-      let itemsToReconcile = [];
-
-      if (isManual) {
-        const sku = document.getElementById('manSku').value.trim();
-        const size = document.getElementById('manSize').value.trim();
-        const qty = parseInt(document.getElementById('manQty').value, 10);
-        const inv = document.getElementById('manInvoice').value.trim();
-        const doc = document.getElementById('manDoc').value.trim();
-
-        if (!sku || isNaN(qty) || qty <= 0) {
-          showToast('Ingresa un SKU y una cantidad válida mayor a 0', 'error');
-          return;
-        }
-
-        itemsToReconcile.push({
-          sku: sku,
-          size: size,
-          qty: qty,
-          invoice: inv || 'FAC-MANUAL',
-          doc: doc || 'DOC-MANUAL',
-          date: new Date().toISOString().split('T')[0]
-        });
-      } else {
-        if (pendingInvoiceItems.length === 0) {
-          showToast('Selecciona un archivo de factura antes de amortizar', 'error');
-          return;
-        }
-
-        const globalInv = document.getElementById('recGlobalInvoice').value.trim();
-        const globalDoc = document.getElementById('recGlobalDoc').value.trim();
-        const globalDate = document.getElementById('recGlobalDate').value;
-
-        itemsToReconcile = pendingInvoiceItems.map(item => ({
-          ...item,
-          invoice: item.invoice || globalInv || 'FACT-ENTRADA',
-          doc: item.doc || globalDoc || 'DOC-DEFAULT',
-          date: item.date || globalDate || new Date().toISOString().split('T')[0]
-        }));
-      }
-
-      showLoading(true, 'Amortizando órdenes y recalculando saldos pendientes...');
-
-      // Execute reconciliation logic on working copy
-      let amortizedCount = 0;
-      const newOrdersToAdd = [];
-      const ordersToUpdate = [];
-
-      for (const inv of itemsToReconcile) {
-        let remainingQtyToInvoice = inv.qty;
-
-        // Find candidate rows in 10A stage matching SKU (and size if specified)
-        for (let i = 0; i < records.length; i++) {
-          const row = records[i];
-
-          if (row.Etapa.includes('10A') && row.Código.toLowerCase() === inv.sku.toLowerCase()) {
-            // Optional size match
-            if (inv.size && row.Talla && row.Talla.toLowerCase() !== inv.size.toLowerCase()) {
-              continue;
-            }
-
-            const availableInRow = row.Cantidad;
-
-            if (remainingQtyToInvoice >= availableInRow) {
-              // Row is fully satisfied by this invoice
-              row.Etapa = STAGE_FACTURADO;
-              row.Factura = inv.invoice;
-              row.Documento = inv.doc;
-              row["Fecha de factura"] = inv.date;
-              remainingQtyToInvoice -= availableInRow;
-              amortizedCount += availableInRow;
-              ordersToUpdate.push(row);
-            } else if (remainingQtyToInvoice > 0) {
-              // Row is partially satisfied: SPLIT ROW
-              // 1. Invoiced portion becomes P24
-              const invoicedPortion = {
-                ...row,
-                id: undefined, // Let autoIncrement handle ID
-                Cantidad: remainingQtyToInvoice,
-                Etapa: STAGE_FACTURADO,
-                Factura: inv.invoice,
-                Documento: inv.doc,
-                "Fecha de factura": inv.date
-              };
-              newOrdersToAdd.push(invoicedPortion);
-
-              // 2. Existing row retains remainder in 10A
-              row.Cantidad = availableInRow - remainingQtyToInvoice;
-              amortizedCount += remainingQtyToInvoice;
-              ordersToUpdate.push(row);
-
-              remainingQtyToInvoice = 0;
-            }
-
-            if (remainingQtyToInvoice === 0) break;
-          }
-        }
-      }
-
-      // Persist changes to IndexedDB
-      const tx = db.transaction('orders', 'readwrite');
-      const store = tx.objectStore('orders');
-
-      for (const row of ordersToUpdate) {
-        store.put(row);
-      }
-      for (const newRow of newOrdersToAdd) {
-        store.add(newRow);
-      }
-
-      await new Promise(resolve => tx.oncomplete = resolve);
-
-      showLoading(false);
-      closeModal('reconcileModal');
-
-      // Clear reconciliation state
-      pendingInvoiceItems = [];
-      document.getElementById('invoiceFilePreview').classList.add('hidden');
-      document.getElementById('reconcileFileInput').value = '';
-      if (isManual) {
-        document.getElementById('manSku').value = '';
-        document.getElementById('manQty').value = '';
-        document.getElementById('manSize').value = '';
-      }
-
-      showToast(`Conciliación exitosa: ${amortizedCount.toLocaleString()} unidades amortizadas a P24`, 'success');
-      selectFolder(currentBrand, currentSeason);
-    }
-
-    // --- Export to Excel (Full 25 columns matching EOT structure) ---
     function exportToExcel() {
       if (records.length === 0) {
         showToast('No hay datos en esta temporada para exportar', 'error');
         return;
       }
 
-      showLoading(true, 'Generando archivo Excel oficial EOT...', 40);
+      showLoading(true, 'Generando archivo Excel oficial...', 40);
 
-      // Map to exact column structure
       const exportData = records.map(r => {
         const row = {};
-        for (const col of EOT_COLUMNS) {
-          row[col] = r[col] !== undefined ? r[col] : '';
-        }
+        for (const col of EOT_COLUMNS) row[col] = r[col] !== undefined ? r[col] : '';
         return row;
       });
 
@@ -1190,36 +1330,46 @@
       const workbook = XLSX.utils.book_new();
       XLSX.utils.book_append_sheet(workbook, worksheet, `${currentSeason}`);
 
-      const filename = `EOT_TRACKING_${currentBrand.toUpperCase()}_${currentSeason}_${new Date().toISOString().split('T')[0]}.xlsx`;
+      const filename = `EOT_SITUACION_${currentBrand.toUpperCase()}_${currentSeason}_${new Date().toISOString().split('T')[0]}.xlsx`;
       XLSX.writeFile(workbook, filename);
 
       showLoading(false);
       showToast(`Archivo exportado como ${filename}`, 'success');
     }
 
-    // --- Demo Data Generator (Reebok FW26 sample) ---
+    // --- Demo Data with DROPS & Multiple Channels ---
     async function loadSampleData() {
-      showLoading(true, 'Generando datos de demostración Reebok FW26...', 30);
+      showLoading(true, 'Generando datos Reebok FW26 con DROPS...', 30);
 
-      const sampleChannels = ['MARATHON', 'WEB', 'CUENCA', 'QUICENTRO SUR', 'OUTLET', 'CONDADO'];
+      const sampleChannels = ['MARATHON', 'WEB', 'CUENCA', 'QUICENTRO SUR', 'OUTLET'];
       const sampleSKUs = [
         { code: '100074272', desc: 'CLUB C 85 VINTAGE', color: 'FTWR WHITE / CHALK', cat: 'FOOTWEAR', fob: 24.50, pvp: 89.90 },
         { code: '100034185', desc: 'CLASSIC LEATHER SP EXTRA', color: 'CORE BLACK', cat: 'FOOTWEAR', fob: 26.00, pvp: 95.00 },
         { code: '100201490', desc: 'NANO X4 TRAINING', color: 'VECTOR NAVY / ORANGE', cat: 'FOOTWEAR', fob: 38.00, pvp: 140.00 },
         { code: '100008472', desc: 'IDENTITY VECTOR TEE', color: 'MEDIUM GREY HEATHER', cat: 'APPAREL', fob: 8.50, pvp: 29.90 },
-        { code: '100007812', desc: 'WORKOUT READY SHORT', color: 'BLACK', cat: 'APPAREL', fob: 11.20, pvp: 39.90 },
-        { code: '100071239', desc: 'RUSH RUNNER 5 SYNTHETIC', color: 'PURE GREY / PINK', cat: 'FOOTWEAR', fob: 15.00, pvp: 49.90 }
+        { code: '100301694', desc: 'G-UNIT G6 VINTAGE', color: 'BL', cat: 'FOOTWEAR', fob: 45.94, pvp: 174.99 }
       ];
-      const sizes = ['7', '7.5', '8', '8.5', '9', '9.5', '10', '10.5', '11', 'S', 'M', 'L', 'XL'];
+      const sizes = ['7', '8', '8.5', '9', '9.5', '10', '10.5'];
 
       const generated = [];
       let seq = 1627;
 
       for (const sku of sampleSKUs) {
         for (const channel of sampleChannels) {
-          for (let s = 0; s < 4; s++) {
+          for (let s = 0; s < 3; s++) {
             const randomSize = sizes[Math.floor(Math.random() * sizes.length)];
-            const isFacturado = Math.random() > 0.65; // ~35% already invoiced in demo
+            const rand = Math.random();
+            let etapa = STAGE_PENDIENTE;
+            let fact = '';
+            let doc = '';
+
+            if (rand > 0.6) {
+              etapa = STAGE_FACTURADO;
+              fact = '4121';
+              doc = '3906';
+            } else if (rand < 0.15) {
+              etapa = STAGE_DROP;
+            }
 
             generated.push({
               brand: 'reebok',
@@ -1239,16 +1389,16 @@
               Género: 'UNISEX',
               "Fecha de entrega": '2026-11-15',
               "Fecha de venta": '2026-12-01',
-              Cantidad: Math.floor(Math.random() * 25) + 5,
+              Cantidad: Math.floor(Math.random() * 15) + 3,
               FOB: sku.fob,
               PVP: sku.pvp,
               P4: sku.pvp * 0.55,
               PMY: sku.pvp * 0.45,
-              Etapa: isFacturado ? STAGE_FACTURADO : STAGE_PENDIENTE,
-              Documento: isFacturado ? '3906' : '',
-              Factura: isFacturado ? '4056' : '',
-              "Fecha de factura": isFacturado ? '2026-10-28' : '',
-              Embarque: ''
+              Etapa: etapa,
+              Documento: doc,
+              Factura: fact,
+              "Fecha de factura": fact ? '2026-10-27' : '',
+              Embarque: fact ? 'EMB-01' : ''
             });
           }
         }
@@ -1256,24 +1406,16 @@
 
       const tx = db.transaction('orders', 'readwrite');
       const store = tx.objectStore('orders');
-      for (const item of generated) {
-        store.add(item);
-      }
+      for (const item of generated) store.add(item);
       await new Promise(res => tx.oncomplete = res);
 
       showLoading(false);
-      showToast(`${generated.length} filas de prueba generadas en Reebok FW26`, 'success');
+      showToast(`${generated.length} filas cargadas con facturación y DROPS`, 'success');
       selectFolder('reebok', 'FW26');
     }
 
-    // --- UI Modals & Toast Helpers ---
-    function openModal(id) {
-      document.getElementById(id).classList.remove('hidden');
-    }
-
-    function closeModal(id) {
-      document.getElementById(id).classList.add('hidden');
-    }
+    function openModal(id) { document.getElementById(id).classList.remove('hidden'); }
+    function closeModal(id) { document.getElementById(id).classList.add('hidden'); }
 
     function showToast(message, type = 'info') {
       const container = document.getElementById('toastContainer');
@@ -1283,23 +1425,16 @@
                     'border-blue-500 bg-slate-900 text-blue-300';
 
       toast.className = `p-3 rounded-lg border text-xs shadow-xl flex items-center gap-2 pointer-events-auto transform transition duration-200 translate-y-2 opacity-0 font-medium ${color}`;
-      toast.innerHTML = `
-        <span>${type === 'success' ? '✓' : type === 'error' ? '✕' : 'ℹ'}</span>
-        <span>${message}</span>
-      `;
+      toast.innerHTML = `<span>${type === 'success' ? '✓' : type === 'error' ? '✕' : 'ℹ'}</span><span>${message}</span>`;
 
       container.appendChild(toast);
-      setTimeout(() => {
-        toast.classList.remove('translate-y-2', 'opacity-0');
-      }, 10);
-
+      setTimeout(() => toast.classList.remove('translate-y-2', 'opacity-0'), 10);
       setTimeout(() => {
         toast.classList.add('opacity-0', 'translate-y-2');
         setTimeout(() => toast.remove(), 250);
       }, 3500);
     }
 
-    // --- Bootstrapping on Load ---
     window.addEventListener('DOMContentLoaded', async () => {
       try {
         await initDatabase();
